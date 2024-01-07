@@ -35,7 +35,7 @@ fn write_config(app_config: &Config) -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
-fn read_app_config() -> Result<Config, Box<dyn Error>> {
+fn read_config() -> Result<Config, Box<dyn Error>> {
 
     // first check if the file actually exists
     if !fs::metadata(CONFIG_PATH).is_ok() {
@@ -57,7 +57,7 @@ fn read_app_config() -> Result<Config, Box<dyn Error>> {
 
 fn main() {
     // try and grab the config for the CLI app, exit if an error is raised
-    let mut app_config: Config = match read_app_config() {
+    let mut app_config: Config = match read_config() {
         Ok(config) => config.clone(),
         Err(err) => {
             println!("{}", err);
