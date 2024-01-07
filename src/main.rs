@@ -72,8 +72,7 @@ fn main() {
     // if the user passes in a new jira api token, override the original jira api
     match args.jira_api_token {
         Some(jira_api_token) => {
-            println!("jira api token provided: {}", jira_api_token);
-            println!("going to replace the original value in the config ({})", app_config.jira_api_token);
+            println!("jira api token provided ({}), replacing the original config value ({})", jira_api_token, app_config.jira_api_token);
             app_config.jira_api_token = jira_api_token;
             match write_config(&app_config) {
                 Ok(..) => {
