@@ -1,9 +1,9 @@
 use clap::Parser;
 use serde::{Deserialize, Serialize};
-use std::error;
 use std::env::var;
-use std::fmt;
+use std::error;
 use std::error::Error;
+use std::fmt;
 use std::fs;
 use toml;
 
@@ -25,13 +25,11 @@ struct ActivityTree {
     describe_ticket: bool,
 }
 
-
 fn read_app_config() -> Result<Config, Box<dyn Error>> {
-
     // TODO: figure out how to pull this from a ~/.config/jira-cli/config.toml file
     //const CONFIG_PATH: String = format!("{}/.config/jira-cli/config.toml", var("HOME"));
     const CONFIG_PATH: &str = "/users/rohitmusti/.config/jira-cli/config.toml";
-    
+
     // first check if the file actually exists
     if !fs::metadata(CONFIG_PATH).is_ok() {
         let error_message = format!(
@@ -51,7 +49,6 @@ fn read_app_config() -> Result<Config, Box<dyn Error>> {
 }
 
 fn main() {
-
     // try and grab the config for the CLI app, exit if an error is raised
     let app_config = match read_app_config() {
         Ok(config) => config.clone(),
@@ -69,7 +66,10 @@ fn main() {
             println!("going to replace the value in the config w/ the provided value");
         }
         None => {
-            println!("no jira api token provided using the config: {}", app_config.jira_api_token);
+            println!(
+                "no jira api token provided using the config: {}",
+                app_config.jira_api_token
+            );
         }
     }
 
