@@ -7,7 +7,7 @@ use std::fmt;
 use std::fs;
 use toml;
 
-#[derive(Debug, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 struct Config {
     jira_api_token: String,
 }
@@ -25,10 +25,17 @@ struct ActivityTree {
     describe_ticket: bool,
 }
 
+// TODO: figure out how to pull this from a ~/.config/jira-cli/config.toml file
+//const CONFIG_PATH: String = format!("{}/.config/jira-cli/config.toml", var("HOME"));
+const CONFIG_PATH: &str = "/users/rohitmusti/.config/jira-cli/config.toml";
+
+fn write_config(app_config: &Config) -> Result<(), Box<dyn std::error::Error>> {
+    let config_content = toml::to_string(app_config)?;
+    fs::write(CONFIG_PATH, config_content)?;
+    Ok(())
+}
+
 fn read_app_config() -> Result<Config, Box<dyn Error>> {
-    // TODO: figure out how to pull this from a ~/.config/jira-cli/config.toml file
-    //const CONFIG_PATH: String = format!("{}/.config/jira-cli/config.toml", var("HOME"));
-    const CONFIG_PATH: &str = "/users/rohitmusti/.config/jira-cli/config.toml";
 
     // first check if the file actually exists
     if !fs::metadata(CONFIG_PATH).is_ok() {
@@ -50,7 +57,7 @@ fn read_app_config() -> Result<Config, Box<dyn Error>> {
 
 fn main() {
     // try and grab the config for the CLI app, exit if an error is raised
-    let app_config = match read_app_config() {
+    let mut app_config: Config = match read_app_config() {
         Ok(config) => config.clone(),
         Err(err) => {
             println!("{}", err);
@@ -58,12 +65,26 @@ fn main() {
         }
     };
 
+    // parse out any arguments passed in by the CLI
+    // this is the "Activity Tree" of valid actions a user can do
     let args = ActivityTree::parse();
 
+    // if the user passes in a new jira api token, override the original jira api
     match args.jira_api_token {
         Some(jira_api_token) => {
             println!("jira api token provided: {}", jira_api_token);
-            println!("going to replace the value in the config w/ the provided value");
+            println!("going to replace the original value in the config ({})", app_config.jira_api_token);
+            app_config.jira_api_token = jira_api_token;
+            match write_config(&app_config) {
+                Ok(..) => {
+                    println!("successfully updated the app config stored at {}", CONFIG_PATH);
+                },
+                Err(err) => {
+                    println!("📝📄 error updating the app config stored at {}", CONFIG_PATH);
+                    eprintln!("{}", err)
+                }
+
+            }
         }
         None => {
             println!(
@@ -79,3 +100,4 @@ fn main() {
         println!("do not need to describe a ticket");
     }
 }
+
