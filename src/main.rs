@@ -28,7 +28,7 @@ struct ActivityTree {
 
 fn read_app_config() -> Result<Config, Box<dyn Error>> {
 
-    // TODO: figure out how to pull this from a ~.config/jira-cli/config.toml file
+    // TODO: figure out how to pull this from a ~/.config/jira-cli/config.toml file
     //const CONFIG_PATH: String = format!("{}/.config/jira-cli/config.toml", var("HOME"));
     const CONFIG_PATH: &str = "/users/rohitmusti/.config/jira-cli/config.toml";
     
