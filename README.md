@@ -4,6 +4,12 @@ This is a tool for interacting with jira sprints via a CLI. It is basically a wr
 
 This is a funzies project - not something anyone is being paid to do in any real way. We will try to maintain backwards compatibility but we aren't making any guarantees.
 
+## Why?
+
+Jira has a UI, technically. It is buggy, slow, loads weirdly. No shade to their engineers, building stuff is hard, but I feel like they haven't reached their final form. I looked around for other tools and found nothing lightweight enough for my preferences. Ultimately I chose to build this during Rust so I can learn something new and and learn a little more about "systems programming".
+
+My goal is for this tool to feel simple to use - as reliable and effective as a hammer (or grep): something you can script against, something that is so straightforward you don't need to read pages of documentations just to use it, something that it is so useful you don't think of it (or if you do you thank it's creator). I also want to see what quality of software I can build when I am not facing the constraints of working in the office (under time, team, and monetary pressure). Hopefully this feels like a return to the simple building blocks everyone falls in love with when they learn to code.
+
 ## Links
 
 - jira's cli tool, this feels more admin oriented. try it [here](https://marketplace.atlassian.com/apps/6398/jira-command-line-interface-cli?tab=overview&hosting=cloud)
