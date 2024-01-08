@@ -1,4 +1,5 @@
 use clap::Parser;
+use reqwest;
 use serde::{Deserialize, Serialize};
 use std::error::Error;
 use std::fs;
@@ -8,7 +9,7 @@ use toml;
 struct Config {
     jira_api_token: String,
     jira_domain: String,
-    account_email: String
+    account_email: String,
 }
 
 #[derive(Debug, Parser)]
@@ -25,7 +26,7 @@ struct ActivityTree {
     #[clap(long)]
     account_email: Option<String>,
     #[clap(short, long)]
-    describe_ticket: bool,
+    issue_id: Option<String>,
 }
 
 // TODO: figure out how to pull this from a ~/.config/jira-cli/config.toml file
@@ -39,7 +40,6 @@ fn write_config(app_config: &Config) -> Result<(), Box<dyn std::error::Error>> {
 }
 
 fn read_config() -> Result<Config, Box<dyn Error>> {
-
     // first check if the file actually exists
     if !fs::metadata(CONFIG_PATH).is_ok() {
         let error_message = format!(
@@ -64,7 +64,7 @@ fn main() {
         Ok(config) => config.clone(),
         Err(err) => {
             println!("{}", err);
-            return;
+            std::process::exit(1);
         }
     };
 
@@ -74,18 +74,26 @@ fn main() {
 
     // if the user passes in a new jira api token, override the original jira api
     match args.jira_api_token {
-        Some(jira_api_token) => {
-            println!("jira api token provided ({}), replacing the original config value ({})", jira_api_token, app_config.jira_api_token);
-            app_config.jira_api_token = jira_api_token;
+        Some(ref jira_api_token) => {
+            println!(
+                "jira api token provided ({}), replacing the original config value ({})",
+                jira_api_token, app_config.jira_api_token
+            );
+            app_config.jira_api_token = jira_api_token.clone();
             match write_config(&app_config) {
                 Ok(..) => {
-                    println!("successfully updated the app config stored at {}", CONFIG_PATH);
-                },
+                    println!(
+                        "successfully updated the app config stored at {}",
+                        CONFIG_PATH
+                    );
+                }
                 Err(err) => {
-                    println!("📝📄 error updating the app config stored at {}", CONFIG_PATH);
+                    println!(
+                        "📝📄 error updating the app config stored at {}",
+                        CONFIG_PATH
+                    );
                     eprintln!("{}", err)
                 }
-
             }
         }
         None => {
@@ -96,10 +104,17 @@ fn main() {
         }
     }
 
-    if args.describe_ticket {
+    if args.issue_id.is_some() {
         println!("need to describe a ticket");
+        let url = format!("{}/rest/api/3/{:?}", app_config.jira_domain, args.issue_id);
+
+        // Use reqwest to send a GET request
+        let client = reqwest::blocking::Client::new();
+
+        // Use reqwest to send a GET request with basic authentication
+        let response = client.get(url).basic_auth(app_config.account_email.as_str(), Some(app_config.jira_api_token.as_str())).send();
+        println!("wat {:?}", response)
     } else {
         println!("do not need to describe a ticket");
     }
 }
-
