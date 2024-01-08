@@ -18,11 +18,11 @@ struct Config {
     about = "A cli tool for interacting with your Jira board! This is a tool build for funzies and is not part of the official atlassian toolchain."
 )]
 struct ActivityTree {
-    #[clap(short, long)]
+    #[clap(long)]
     jira_api_token: Option<String>,
-    #[clap(short, long)]
+    #[clap(long)]
     jira_domain: Option<String>,
-    #[clap(short, long)]
+    #[clap(long)]
     account_email: Option<String>,
     #[clap(short, long)]
     describe_ticket: bool,
