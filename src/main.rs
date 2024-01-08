@@ -1,15 +1,14 @@
 use clap::Parser;
 use serde::{Deserialize, Serialize};
-use std::env::var;
-use std::error;
 use std::error::Error;
-use std::fmt;
 use std::fs;
 use toml;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 struct Config {
     jira_api_token: String,
+    jira_domain: String,
+    account_email: String
 }
 
 #[derive(Debug, Parser)]
@@ -21,6 +20,10 @@ struct Config {
 struct ActivityTree {
     #[clap(short, long)]
     jira_api_token: Option<String>,
+    #[clap(short, long)]
+    jira_domain: Option<String>,
+    #[clap(short, long)]
+    account_email: Option<String>,
     #[clap(short, long)]
     describe_ticket: bool,
 }
