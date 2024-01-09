@@ -20,7 +20,8 @@ My goal is for this tool to feel simple to use - as reliable and effective as a 
 
 v0.0 - a bare bones tool for interacting with tickets throughout a sprint
 - [x] store a local copy of your jira api token
-- [ ] display ticket data given it's ID, like "EN-1"
+- [x] display ticket data given it's ID, like "EN-1"
+- [ ] make the display output pretty
 - [ ] modify a ticket's status one state to another ("In Progress", "Done") - it would be cool if this is based on
 - [ ] modify a ticket's metadata (description, story points, epic, etc)
 - [ ] view all tickets in the current sprint (summary and status)
