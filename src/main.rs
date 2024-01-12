@@ -30,6 +30,32 @@ struct ActivityTree {
     issue_id: Option<String>,
 }
 
+#[derive(Debug, Deserialize)]
+struct JiraContent {
+    text: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct JiraContentList {
+    content: Vec<JiraContent>,
+}
+
+#[derive(Debug, Deserialize)]
+struct JiraDescription {
+    content: Vec<JiraContentList>,
+}
+
+#[derive(Debug, Deserialize)]
+struct JiraFields {
+    description: Option<JiraDescription>,
+    summary: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct JiraResp {
+    fields: JiraFields,
+}
+
 // TODO: figure out how to pull this from a ~/.config/jira-cli/config.toml file
 //const CONFIG_PATH: String = format!("{}/.config/jira-cli/config.toml", var("HOME"));
 const CONFIG_PATH: &str = "/users/rohitmusti/.config/jira-cli/config.toml";
@@ -132,17 +158,17 @@ fn main() {
             .expect("we expected there to be a text value in the response!")
             .text();
 
-        let processed_result: String = match text_result {
+        let processed_result: JiraResp = match text_result {
             Ok(text) => {
                 // Deserialize the JSON string into a serde_json::Value
                 let json_body: Value = serde_json::from_str(&text)
                     .expect("failed to turn the text body into a Value!");
 
                 // Convert the JSON to a pretty-formatted string
-                let pretty_json = serde_json::to_string_pretty(&json_body)
-                    .expect("should have gotten a pretty string!");
+                let jira_resp: JiraResp = serde_json::from_value(json_body)
+                    .expect("should have gotten a nicely formmated struct");
 
-                pretty_json
+                jira_resp
             }
             _ => {
                 eprintln!("failed to process result from jira's API");
@@ -150,7 +176,7 @@ fn main() {
             }
         };
 
-        println!("{}", processed_result)
+        println!("{:?}", processed_result)
     } else {
         println!("do not need to describe a ticket");
     }
