@@ -13,7 +13,7 @@ My goal is for this tool to feel simple to use - as reliable and effective as a 
 ## Links
 
 - jira's cli tool, this feels more admin oriented. try it [here](https://marketplace.atlassian.com/apps/6398/jira-command-line-interface-cli?tab=overview&hosting=cloud)
-- someone made a jira cli tool! it looks cool but a little overly complex, try it [here] (https://github.com/ankitpokhrel/jira-cli)
+- someone made a jira cli tool! it looks cool but a little overly complex, try it [here](https://github.com/ankitpokhrel/jira-cli)
 - need to create a jira api token? try [here](https://id.atlassian.com/manage-profile/security/api-tokens)
 
 ## Feature Wish List
