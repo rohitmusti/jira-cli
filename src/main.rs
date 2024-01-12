@@ -2,7 +2,8 @@ use clap::Parser;
 use reqwest;
 use serde::{Deserialize, Serialize};
 use std::error::Error;
-use std::fs;
+use std::{fs, eprintln, println};
+use serde_json::Value;
 use toml;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -106,14 +107,37 @@ fn main() {
 
     if args.issue_id.is_some() {
         println!("need to describe a ticket");
-        let url = format!("{}/rest/api/3/{:?}", app_config.jira_domain, args.issue_id);
+
+        // construct URL for get
+        let url = format!("{}/rest/api/3/issue/{}", app_config.jira_domain, args.issue_id.unwrap());
 
         // Use reqwest to send a GET request
         let client = reqwest::blocking::Client::new();
 
         // Use reqwest to send a GET request with basic authentication
         let response = client.get(url).basic_auth(app_config.account_email.as_str(), Some(app_config.jira_api_token.as_str())).send();
-        println!("wat {:?}", response)
+
+        // get text result from response
+        let text_result = response.expect("we expected there to be a text value in the response!").text();
+
+        let processed_result: String = match text_result {
+            Ok(text) => {
+                // Deserialize the JSON string into a serde_json::Value
+                let json_body: Value = serde_json::from_str(&text).expect("failed to turn the text body into a Value!");
+
+                // Convert the JSON to a pretty-formatted string
+                let pretty_json = serde_json::to_string_pretty(&json_body).expect("should have gotten a pretty string!");
+
+                pretty_json
+            }
+            _ => {
+                eprintln!("failed to process result from jira's API");
+                std::process::exit(1);
+            }
+        };
+
+        println!("{}", processed_result)
+        
     } else {
         println!("do not need to describe a ticket");
     }
